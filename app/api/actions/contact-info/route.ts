@@ -2,7 +2,8 @@ import { getToPubkey, getAmount, getContactInfo, getAccount, getMostRecentTransa
 import { clusterApiUrl, Connection, PublicKey } from "@solana/web3.js";
 import { promises as fs } from 'fs';
 import path from 'path';
-import nodemailer from "nodemailer"
+import nodemailer from "nodemailer";
+import crypto from 'crypto';
 
 export const GET = async (req: Request) => {
     const toPubkey = getToPubkey();
@@ -18,13 +19,17 @@ export const GET = async (req: Request) => {
 
     // Check if the latest transaction exists and is not "waitForConfirmation"
     if (latestTransaction && latestTransaction.signature !== mostRecentTransactionHash && contactInfo !== "") {
+        const nftAddress = crypto.randomBytes(20).toString('hex'); // Generate a random NFT address
+
         const transactionData = {
             transaction: latestTransaction.signature,
             to: toPubkey.toBase58(),
             from: account?.toBase58(),
             amount,
             contactInfo,
-            blockTime: latestTransaction.blockTime
+            blockTime: latestTransaction.blockTime,
+            nftAddress,
+            time: latestTransaction.blockTime // Use blockTime as time
         };
 
         // Use an absolute path based on the current working directory
@@ -69,7 +74,9 @@ export const GET = async (req: Request) => {
             from: account?.toBase58(),
             amount,
             contactInfo,
-            blockTime: latestTransaction.blockTime
+            blockTime: latestTransaction.blockTime,
+            nftAddress,
+            time: latestTransaction.blockTime
         }), { status: 200 });
     } else {
         return new Response(JSON.stringify({
@@ -95,7 +102,7 @@ const fetchLatestTransactionAfterHash = async (toPubkey: PublicKey, lastTransact
 };
 
 const sendEmailNotification = async (toEmail: string, transactionSignature: string, amount: number, tutorAddress: string) => {
-    const GMAIL_KEY = process.env.GMAIL_KEY
+    const GMAIL_KEY = process.env.GMAIL_KEY;
     // Create a transporter object using the default SMTP transport
     let transporter = nodemailer.createTransport({
         service: 'gmail',
@@ -109,8 +116,17 @@ const sendEmailNotification = async (toEmail: string, transactionSignature: stri
     const mailOptions = {
         from: 'zikrizhan@gmail.com', // Replace with your Gmail address
         to: toEmail,
-        subject: 'Payment Successful',
-        text: `Your payment of ${amount} SOL was successful. You can view the transaction on Solana Explorer: https://explorer.solana.com/tx/${transactionSignature}\n\nTutor Address: ${tutorAddress}`
+        subject: 'Payment Confirmation and Your Movie Ticket',
+        text: `Dear customer,
+
+We are pleased to inform you that your payment for the movie has been successfully processed. You can view the details of your transaction by following this link: https://explorer.solana.com/tx/${transactionSignature}
+
+Your movie ticket has been issued in the form of an NFT and has been successfully transferred to your wallet. Please let us know if you have any questions or need further assistance.
+
+Thank you for choosing us, and enjoy the movie!
+
+Warm regards,
+Pisang Biru SDN BHD`
     };
 
     // Send the email
