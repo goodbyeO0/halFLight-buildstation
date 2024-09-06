@@ -50,19 +50,19 @@ export const GET = async (req: Request) => {
 
         const payload: ActionGetResponse = {
             type: "action",
-            title: "Actions Example - Transfer Native SOL",
+            title: "Math Tuition | 0.1 sol",
             icon: new URL("/gambar_izhan.jpg", requestUrl.origin).toString(),
-            description: "Tuition halFLight",
+            description: "\nLooking to ace your math exams? 📚 Join our 3-hour intensive math tuition session and master the fundamentals with ease! This session is perfect for students who want to boost their skills, solve problems confidently, and understand key concepts better.\n\n\n\nPrice: Only 0.1 SOL for expert guidance and practice to help you excel in math.",
             label: "Transfer", // this value will be ignored since `links.actions` exists
             links: {
                 actions: [
                     {
-                        label: "Send 0.1 SOL", // button text
+                        label: "Purchase", // button text
                         href: `${baseHref}&amount=${"0.1"}&contactInfo={contactInfo}`, // this href will have a text input
                         parameters: [
                             {
                                 name: "contactInfo", // parameter name in the `href` above
-                                label: "contact info", // placeholder of the text input
+                                label: "email", // placeholder of the text input
                                 required: true,
                             },
                         ],

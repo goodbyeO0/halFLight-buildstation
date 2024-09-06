@@ -22,7 +22,7 @@ const Navbar: NextPage<NavbarProps> = ({ children }) => {
     return (
         <nav className="bg-gradient-to-r from-blue-600 to-purple-600 p-4 flex justify-between items-center shadow-lg">
             <div className="text-white text-2xl font-bold">
-                My DApp
+                halFLight
             </div>
             <div className="flex items-center space-x-4">
                 <div className="bg-white rounded-lg p-4 shadow-md flex items-center space-x-4">
